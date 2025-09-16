@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Dex - Chat{% endblock %}
+{% block content %}
+<section class="chat-section">
+  <h2>Chat entre motociclistas</h2>
+  <div id="chat-box">
+    {% for msg in mensagens %}
+      <div class="msg">
+        <strong>{{ msg.usuario }}</strong> <span class="hora">{{ msg.horario }}</span>
+        <p>{{ msg.texto }}</p>
+      </div>
+    {% endfor %}
+  </div>
+  <form id="chat-form">
+    <input type="text" id="usuario" placeholder="Seu nome" required />
+    <input type="text" id="texto" placeholder="Digite uma mensagem" required />
+    <button type="submit" class="btn">Enviar</button>
+  </form>
+</section>
+<script>
+  const form = document.getElementById("chat-form");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const usuario = document.getElementById("usuario").value;
+    const texto = document.getElementById("texto").value;
+    await fetch("/enviar_mensagem", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuario, texto })
+    });
+    location.reload();
+  });
+</script>
+{% endblock %}

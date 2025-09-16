@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Dex - Mapa{% endblock %}
+{% block head %}
+<script defer src="{{ url_for('static', filename='js/mapa.js') }}"></script>
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=COLOQUE_SUA_CHAVE_AQUI&callback=initMap">
+</script>
+{% endblock %}
+{% block content %}
+<section class="mapa-section">
+  <h2>Marque sua rota</h2>
+  <div id="map"></div>
+  <button id="enviar-rota" class="btn">Enviar rota para o capacete</button>
+</section>
+{% endblock %}
