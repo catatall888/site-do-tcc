@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dex - Assistente IA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --text: #333;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --ai-bg: #1c2435;
+            --ai-chat-user: #3498db;
+            --ai-chat-bot: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: var(--text);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            color: var(--secondary);
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* AI Assistant Section */
+        .ai-section {
+            flex: 1;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .ai-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            max-width: 1000px;
+            margin: 0 auto;
+            height: 100%;
+        }
+        
+        .ai-header {
+            padding: 2rem;
+            background: var(--ai-bg);
+            color: white;
+            text-align: center;
+        }
+        
+        .ai-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .ai-header p {
+            opacity: 0.8;
+        }
+        
+        .ai-content {
+            display: flex;
+            flex: 1;
+        }
+        
+        .ai-sidebar {
+            width: 250px;
+            background: #f5f7fa;
+            padding: 1.5rem;
+            border-right: 1px solid #eaeaea;
+        }
+        
+        .ai-sidebar h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        .suggestion-list {
+            list-style: none;
+        }
+        
+        .suggestion-list li {
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .suggestion-list li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .suggestion-list i {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+        
+        .ai-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-container {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            max-width: 80%;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.5rem;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            background: var(--ai-chat-user);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .bot-message {
+            background: var(--ai-chat-bot);
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .message-header i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .message-typing {
+            display: flex;
+            align-items: center;
+            background: var(--ai-chat-bot);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 18px;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+            max-width: 120px;
+        }
+        
+        .typing-dots {
+            display: flex;
+            margin-left: 10px;
+        }
+        
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+            margin: 0 2px;
+            opacity: 0.6;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dots span:nth-child(1) { animation-delay: 0s; }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+            30% { transform: translateY(-5px); opacity: 1; }
+        }
+        
+        .chat-input {
+            padding: 1.5rem;
+            background: #f5f7fa;
+            border-top: 1px solid #eaeaea;
+            display: flex;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            margin-right: 1rem;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        .chat-input input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        /* Features Section */
+        .ai-features {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .section-title p {
+            color: #777;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--secondary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--secondary);
+            padding-left: 5px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .nav-links {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-links li {
+                margin: 0.5rem;
+            }
+            
+            .ai-content {
+                flex-direction: column;
+            }
+            
+            .ai-sidebar {
+                width: 100%;
+                order: 2;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-motorcycle"></i>
+                    <span>Dex</span>
+                </div>
+                    <ul class="nav-links">
+                        <li><a href="{{ url_for('index') }}">Início</a></li>
+                        <li><a href="{{ url_for('mapa') }}">Mapa</a></li>
+                        <li><a href="{{ url_for('ia') }}">IA</a></li>
+                        <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                        <li><a href="{{ url_for('suporte') }}">Suporte</a></li>
+                        <li><a href="{{ url_for('chat') }}">Chat</a></li>
+                        <li><a href="{{ url_for('perfil') }}">Perfil</a></li>
+                    </ul>
+                <a href="{{ url_for('perfil') }}" class="btn">Perfil</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- AI Assistant Section -->
+    <section class="ai-section">
+        <div class="container">
+            <div class="ai-container">
+                <div class="ai-header">
+                    <h2>Assistente IA</h2>
+                    <p>Seu companheiro inteligente para rotas, manutenção e dicas de motociclismo</p>
+                </div>
+                
+                <div class="ai-content">
+                    <div class="ai-sidebar">
+                        <h3>Perguntas Sugeridas</h3>
+                        <ul class="suggestion-list">
+                            <li><i class="fas fa-route"></i> Melhor rota para a praia?</li>
+                            <li><i class="fas fa-cloud-sun"></i> Previsão do tempo para hoje?</li>
+                            <li><i class="fas fa-tools"></i> Quando devo trocar o óleo?</li>
+                            <li><i class="fas fa-gas-pump"></i> Onde abastecer com etanol?</li>
+                            <li><i class="fas fa-traffic-light"></i> Trânsito agora no centro?</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="ai-chat">
+                        <div class="chat-container">
+                            <div class="message bot-message">
+                                <div class="message-header">
+                                    <i class="fas fa-robot"></i>
+                                    <strong>Assistente Dex</strong>
+                                </div>
+                                <p>Olá! Sou seu assistente de inteligência artificial. Como posso ajudá-lo com sua viagem de moto hoje?</p>
+                            </div>
+                            
+                            <div class="message user-message">
+                                <div class="message-header">
+                                    <i class="fas fa-user"></i>
+                                    <strong>Você</strong>
+                                </div>
+                                <p>Qual a melhor rota para a serra evitando trânsito?</p>
+                            </div>
+                            
+                            <div class="message bot-message">
+                                <div class="message-header">
+                                    <i class="fas fa-robot"></i>
+                                    <strong>Assistente Dex</strong>
+                                </div>
+                                <p>Com base nas condições atuais, recomendo a estrada SP-148. Há menos tráfego de caminhões e a vista é espetacular. O percurso tem 85km e leva aproximadamente 1h40. Lembre-se que há um pedágio de R$ 5,20 no km 32.</p>
+                            </div>
+                            
+                            <div class="message-typing">
+                                <i class="fas fa-robot"></i> Digitando
+                                <div class="typing-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input">
+                            <input type="text" id="user-input" placeholder="Digite sua pergunta...">
+                            <button type="button" class="btn" id="send-btn">
+                                <i class="fas fa-paper-plane"></i> Enviar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="ai-features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Recursos do Assistente IA</h2>
+                <p>Descubra tudo que nosso assistente inteligente pode fazer por você</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <h3>Rotas Inteligentes</h3>
+                    <p>Planeje rotas considerando trânsito, condições climáticas e estradas preferenciais para motociclistas.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h3>Manutenção Preditiva</h3>
+                    <p>Receba alertas sobre manutenção necessária baseada na quilometragem e condições de uso da sua moto.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud-sun-rain"></i>
+                    </div>
+                    <h3>Previsão do Tempo</h3>
+                    <p>Consulte condições climáticas detalhadas para sua rota e receba alertas de chuvas fortes ou ventos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Sobre o Dex</h3>
+                    <p>O Dex é um sistema inteligente desenvolvido para motociclistas, oferecendo navegação, comunidade e recursos de segurança.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Links Rápidos</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="#">Recursos</a></li>
+                        <li><a href="#">Preços</a></li>
+                        <li><a href="#">Depoimentos</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Recursos</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Navegação</a></li>
+                        <li><a href="#">Rotas em Grupo</a></li>
+                        <li><a href="#">Alertas de Trânsito</a></li>
+                        <li><a href="#">Manutenção</a></li>
+                        <li><a href="#">Comunidade</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contato</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> contato@dexapp.com</li>
+                        <li><i class="fas fa-phone"></i> (11) 99999-9999</li>
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo, Brasil</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Dex - Sistema Inteligente para Motociclistas. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // AI Assistant functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInput = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const chatContainer = document.querySelector('.chat-container');
+            const typingIndicator = document.querySelector('.message-typing');
+            const suggestionItems = document.querySelectorAll('.suggestion-list li');
+            
+            // Hide typing indicator initially
+            typingIndicator.style.display = 'none';
+            
+            // Function to add a new message to the chat
+            function addMessage(text, isUser = false) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+                messageElement.classList.add(isUser ? 'user-message' : 'bot-message');
+                
+                messageElement.innerHTML = `
+                    <div class="message-header">
+                        <i class="fas ${isUser ? 'fa-user' : 'fa-robot'}"></i>
+                        <strong>${isUser ? 'Você' : 'Assistente Dex'}</strong>
+                    </div>
+                    <p>${text}</p>
+                `;
+                
+                chatContainer.insertBefore(messageElement, typingIndicator);
+                
+                // Scroll to the bottom of the chat
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            // Function to simulate AI response
+            function simulateAIResponse(userMessage) {
+                // Show typing indicator
+                typingIndicator.style.display = 'flex';
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                // Define possible responses based on user input
+                let responses = [
+                    "Com base nas condições atuais, recomendo a estrada SP-148. Há menos tráfego e a vista é espetacular.",
+                    "A previsão do tempo para hoje é de sol com algumas nuvens. Temperatura máxima de 28°C.",
+                    "Sua próxima troca de óleo está programada para daqui a 800km ou no próximo mês.",
+                    "Há um posto de combustível confiável a 5km da sua localização com etanol a R$ 3,89.",
+                    "O trânsito no centro está intenso neste momento. Melhor evitar a região ou usar rotas alternativas.",
+                    "Para sua segurança, verifique a pressão dos pneus antes de sair. A calibragem ideal é 29 PSI na dianteira e 32 PSI na traseira.",
+                    "Encontrei uma rota alternativa que pode economizar 15 minutos no seu trajeto. Quer que eu envie para o seu app?",
+                    "Com base no seu histórico, recomendo uma revisão no sistema de freios na próxima semana."
+                ];
+                
+                // Check for specific keywords to provide more relevant responses
+                if (userMessage.toLowerCase().includes('rota') || userMessage.toLowerCase().includes('caminho')) {
+                    responses = [
+                        "Encontrei uma rota com 15% menos tráfego e paisagens incríveis. Quer que eu detalhe?",
+                        "Para chegar mais rápido, sugiro a Av. Principal, mas evite a Rua das Flores devido a obras.",
+                        "Há um congestionamento de 4km na BR-116. Melhor pegar a marginal que está fluindo melhor."
+                    ];
+                } else if (userMessage.toLowerCase().includes('tempo') || userMessage.toLowerCase().includes('clima')) {
+                    responses = [
+                        "A previsão para hoje é de sol com possibilidade de chuva passageira à tarde. Leve capa de chuva!",
+                        "Cuidado com ventos fortes de até 40km/h na região serrana hoje. Mantenha atenção redobrada nas curvas.",
+                        "Temperatura agradável para pilotagem durante todo o dia, variando entre 22°C e 30°C."
+                    ];
+                } else if (userMessage.toLowerCase().includes('óleo') || userMessage.toLowerCase().includes('manutenção')) {
+                    responses = [
+                        "Sua última troca de óleo foi há 3.200km. Recomendo fazer a próxima aos 4.000km.",
+                        "Verifique o nível do óleo semanalmente. Lembre-se que a moto deve estar na posição vertical para medição precisa.",
+                        "Além da troca de óleo, notei que sua corrente precisa de limpeza e lubrificação. Posso agendar na oficina preferida?"
+                    ];
+                }
+                
+                // Random delay to simulate thinking
+                const delay = 1500 + Math.random() * 2000;
+                
+                setTimeout(() => {
+                    // Hide typing indicator
+                    typingIndicator.style.display = 'none';
+                    
+                    // Select a random response
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    
+                    // Add the response to the chat
+                    addMessage(randomResponse, false);
+                }, delay);
+            }
+            
+            // Handle send button click
+            sendBtn.addEventListener('click', function() {
+                const message = userInput.value.trim();
+                
+                if (message) {
+                    // Add user message to chat
+                    addMessage(message, true);
+                    
+                    // Clear input
+                    userInput.value = '';
+                    
+                    // Simulate AI response
+                    simulateAIResponse(message);
+                }
+            });
+            
+            // Handle enter key in input
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendBtn.click();
+                }
+            });
+            
+            // Add click event to suggestion items
+            suggestionItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    userInput.value = this.textContent;
+                    sendBtn.click();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

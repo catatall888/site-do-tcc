@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dex - Mapa Interativo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --text: #333;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: var(--text);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            color: var(--secondary);
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Map Section */
+        .mapa-section {
+            flex: 1;
+            padding: 2rem 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mapa-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .mapa-header h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .mapa-header p {
+            color: #777;
+            font-size: 1.1rem;
+        }
+        
+        .mapa-content {
+            display: flex;
+            flex: 1;
+            gap: 2rem;
+        }
+        
+        .mapa-sidebar {
+            width: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mapa-sidebar h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        .route-controls {
+            margin-bottom: 2rem;
+        }
+        
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--primary);
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        .input-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .route-options {
+            margin-bottom: 2rem;
+        }
+        
+        .options-title {
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+        }
+        
+        .option-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+        
+        .option-check input {
+            margin-right: 0.8rem;
+        }
+        
+        .saved-routes {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .route-list {
+            list-style: none;
+        }
+        
+        .route-item {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .route-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .route-item h4 {
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+        
+        .route-item p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .mapa-container {
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        
+        #map {
+            height: 100%;
+            width: 100%;
+            z-index: 1;
+        }
+        
+        .map-controls {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .control-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--secondary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--secondary);
+            padding-left: 5px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .mapa-content {
+                flex-direction: column;
+            }
+            
+            .mapa-sidebar {
+                width: 100%;
+                order: 2;
+            }
+            
+            .mapa-container {
+                height: 400px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .nav-links {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-links li {
+                margin: 0.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-motorcycle"></i>
+                    <span>Dex</span>
+                </div>
+                  <ul class="nav-links">
+                      <li><a href="{{ url_for('index') }}">Início</a></li>
+                      <li><a href="{{ url_for('mapa') }}">Mapa</a></li>
+                      <li><a href="{{ url_for('ia') }}">IA</a></li>
+                      <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                      <li><a href="{{ url_for('suporte') }}">Suporte</a></li>
+                      <li><a href="{{ url_for('chat') }}">Chat</a></li>
+                      <li><a href="{{ url_for('perfil') }}">Perfil</a></li>
+                  </ul>
+                <a href="{{ url_for('perfil') }}" class="btn">Perfil</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Map Section -->
+    <section class="mapa-section">
+        <div class="container">
+            <div class="mapa-header">
+                <h2>Mapa Interativo</h2>
+                <p>Planeje suas rotas e explore estradas com o mapa inteligente do Dex</p>
+            </div>
+            
+            <div class="mapa-content">
+                <div class="mapa-sidebar">
+                    <h3>Planejar Rota</h3>
+                    <div class="route-controls">
+                        <div class="input-group">
+                            <label for="origin"><i class="fas fa-play-circle"></i> Origem</label>
+                            <input type="text" id="origin" placeholder="Sua localização atual">
+                        </div>
+                        <div class="input-group">
+                            <label for="destination"><i class="fas fa-flag-checkered"></i> Destino</label>
+                            <input type="text" id="destination" placeholder="Para onde vamos?">
+                        </div>
+                        <button class="btn" style="width: 100%">
+                            <i class="fas fa-route"></i> Traçar Rota
+                        </button>
+                    </div>
+                    
+                    <div class="route-options">
+                        <div class="options-title">Preferências de Rota</div>
+                        <div class="option-check">
+                            <input type="checkbox" id="avoid-tolls" checked>
+                            <label for="avoid-tolls">Evitar pedágios</label>
+                        </div>
+                        <div class="option-check">
+                            <input type="checkbox" id="scenic-route">
+                            <label for="scenic-route">Rotas cênicas</label>
+                        </div>
+                        <div class="option-check">
+                            <input type="checkbox" id="avoid-highways">
+                            <label for="avoid-highways">Evitar rodovias</label>
+                        </div>
+                        <div class="option-check">
+                            <input type="checkbox" id="group-ride" checked>
+                            <label for="group-ride">Preparar para grupo</label>
+                        </div>
+                    </div>
+                    
+                    <div class="saved-routes">
+                        <h3>Rotas Salvas</h3>
+                        <ul class="route-list">
+                            <li class="route-item">
+                                <h4>Serra da Mantiqueira</h4>
+                                <p>120km • 2h15min • Dificuldade: Moderada</p>
+                            </li>
+                            <li class="route-item">
+                                <h4>Praia do Rosa</h4>
+                                <p>85km • 1h40min • Dificuldade: Fácil</p>
+                            </li>
+                            <li class="route-item">
+                                <h4>Trilha da Bocaina</h4>
+                                <p>65km • 3h20min • Dificuldade: Difícil</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mapa-container">
+                    <div id="map"></div>
+                    <div class="map-controls">
+                        <button class="control-btn" id="locate-me">
+                            <i class="fas fa-location-arrow"></i>
+                        </button>
+                        <button class="control-btn">
+                            <i class="fas fa-layer-group"></i>
+                        </button>
+                        <button class="control-btn">
+                            <i class="fas fa-traffic-light"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn" id="enviar-rota">
+                    <i class="fas fa-paper-plane"></i> Enviar rota para o capacete
+                </button>
+                <button class="btn" style="background: var(--accent)">
+                    <i class="fas fa-share-alt"></i> Compartilhar com grupo
+                </button>
+                <button class="btn" style="background: var(--primary)">
+                    <i class="fas fa-save"></i> Salvar rota
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Sobre o Dex</h3>
+                    <p>O Dex é um sistema inteligente desenvolvido para motociclistas, oferecendo navegação, comunidade e recursos de segurança.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Links Rápidos</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="#">Recursos</a></li>
+                        <li><a href="#">Preços</a></li>
+                        <li><a href="#">Depoimentos</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Recursos</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Navegação</a></li>
+                        <li><a href="#">Rotas em Grupo</a></li>
+                        <li><a href="#">Alertas de Trânsito</a></li>
+                        <li><a href="#">Manutenção</a></li>
+                        <li><a href="#">Comunidade</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contato</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> contato@dexapp.com</li>
+                        <li><i class="fas fa-phone"></i> (11) 99999-9999</li>
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo, Brasil</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Dex - Sistema Inteligente para Motociclistas. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        function initMap() {
+            // Set initial coordinates (São Paulo)
+            const initialCoords = [-23.5505, -46.6333];
+            
+            // Create map
+            const map = L.map('map').setView(initialCoords, 13);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Add a marker
+            const marker = L.marker(initialCoords).addTo(map)
+                .bindPopup('São Paulo<br>Ponto de partida recomendado.')
+                .openPopup();
+            
+            // Add locate me functionality
+            const locateBtn = document.getElementById('locate-me');
+            locateBtn.addEventListener('click', function() {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const userCoords = [position.coords.latitude, position.coords.longitude];
+                        map.setView(userCoords, 15);
+                        
+                        // Add or update user marker
+                        if (window.userMarker) {
+                            window.userMarker.setLatLng(userCoords);
+                        } else {
+                            window.userMarker = L.marker(userCoords)
+                                .addTo(map)
+                                .bindPopup('Sua localização atual')
+                                .openPopup();
+                        }
+                    }, function(error) {
+                        alert('Não foi possível obter sua localização: ' + error.message);
+                    });
+                } else {
+                    alert('Geolocalização não é suportada pelo seu navegador');
+                }
+            });
+            
+            // Simulate route drawing
+            document.querySelector('.route-controls .btn').addEventListener('click', function() {
+                const origin = document.getElementById('origin').value;
+                const destination = document.getElementById('destination').value;
+                
+                if (!origin || !destination) {
+                    alert('Por favor, preencha origem e destino');
+                    return;
+                }
+                
+                // Simulate route calculation
+                const routeCoords = [
+                    [-23.5505, -46.6333],
+                    [-23.5600, -46.6400],
+                    [-23.5700, -46.6500],
+                    [-23.5800, -46.6600],
+                    [-23.5900, -46.6700]
+                ];
+                
+                // Remove existing route if any
+                if (window.routeLine) {
+                    map.removeLayer(window.routeLine);
+                }
+                
+                // Draw new route
+                window.routeLine = L.polyline(routeCoords, {color: '#e74c3c', weight: 5}).addTo(map);
+                
+                // Fit map to route bounds
+                const bounds = L.latLngBounds(routeCoords);
+                map.fitBounds(bounds);
+                
+                // Add start and end markers
+                if (!window.startMarker) {
+                    window.startMarker = L.marker(routeCoords[0])
+                        .addTo(map)
+                        .bindPopup('Partida: ' + origin);
+                } else {
+                    window.startMarker.setLatLng(routeCoords[0]);
+                }
+                
+                if (!window.endMarker) {
+                    window.endMarker = L.marker(routeCoords[routeCoords.length - 1])
+                        .addTo(map)
+                        .bindPopup('Destino: ' + destination);
+                } else {
+                    window.endMarker.setLatLng(routeCoords[routeCoords.length - 1]);
+                }
+            });
+            
+            // Handle route item clicks
+            document.querySelectorAll('.route-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const routeName = this.querySelector('h4').textContent;
+                    document.getElementById('destination').value = routeName;
+                    
+                    // Simulate clicking the route button
+                    document.querySelector('.route-controls .btn').click();
+                });
+            });
+            
+            // Handle send to helmet button
+            document.getElementById('enviar-rota').addEventListener('click', function() {
+                if (!window.routeLine) {
+                    alert('Por favor, trace uma rota primeiro');
+                    return;
+                }
+                
+                alert('Rota enviada para o seu capacete com sucesso!');
+            });
+        }
+        
+        // Initialize map when page loads
+        document.addEventListener('DOMContentLoaded', initMap);
+    </script>
+</body>
+</html>

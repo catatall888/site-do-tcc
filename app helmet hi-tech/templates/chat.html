@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dex - Chat entre Motociclistas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --text: #333;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --chat-bg: #f5f7fa;
+            --msg-sent: #3498db;
+            --msg-received: #e3e6ea;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: var(--text);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            color: var(--secondary);
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Chat Section */
+        .chat-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 0;
+            background-color: var(--chat-bg);
+        }
+        
+        .chat-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .chat-header h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .chat-header p {
+            color: #777;
+            font-size: 1.1rem;
+        }
+        
+        .chat-container {
+            display: flex;
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        /* Sidebar */
+        .chat-sidebar {
+            width: 250px;
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .online-users {
+            margin-top: 1.5rem;
+        }
+        
+        .online-users h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-list {
+            list-style: none;
+        }
+        
+        .user-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .user-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #2ecc71;
+            margin-left: auto;
+        }
+        
+        /* Chat Main */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-info {
+            padding: 1rem 1.5rem;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .chat-info i {
+            color: var(--secondary);
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        #chat-box {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .msg {
+            max-width: 70%;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .msg.received {
+            background: var(--msg-received);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .msg.sent {
+            background: var(--msg-sent);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .msg-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .msg-header strong {
+            font-size: 1rem;
+        }
+        
+        .msg-header .hora {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .msg p {
+            margin: 0;
+            line-height: 1.4;
+        }
+        
+        #chat-form {
+            display: flex;
+            padding: 1rem;
+            background: var(--light);
+            border-top: 1px solid #ddd;
+        }
+        
+        #chat-form input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            margin-right: 0.5rem;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        #chat-form input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem 0 1rem;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--secondary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--secondary);
+            padding-left: 5px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .nav-links {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-links li {
+                margin: 0.5rem;
+            }
+            
+            .chat-container {
+                flex-direction: column;
+            }
+            
+            .chat-sidebar {
+                width: 100%;
+                order: 2;
+                padding: 1rem;
+            }
+            
+            .online-users {
+                margin-top: 1rem;
+            }
+            
+            .msg {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-motorcycle"></i>
+                    <span>Dex</span>
+                </div>
+                  <ul class="nav-links">
+                      <li><a href="{{ url_for('index') }}">Início</a></li>
+                      <li><a href="{{ url_for('mapa') }}">Mapa</a></li>
+                      <li><a href="{{ url_for('ia') }}">IA</a></li>
+                      <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                      <li><a href="{{ url_for('suporte') }}">Suporte</a></li>
+                      <li><a href="{{ url_for('chat') }}">Chat</a></li>
+                      <li><a href="{{ url_for('perfil') }}">Perfil</a></li>
+                  </ul>
+                <a href="{{ url_for('perfil') }}" class="btn">Perfil</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Chat Section -->
+    <section class="chat-section">
+        <div class="container">
+            <div class="chat-header">
+                <h2>Chat entre Motociclistas</h2>
+                <p>Converse com outros motociclistas em tempo real</p>
+            </div>
+            
+            <div class="chat-container">
+                <!-- Sidebar with online users -->
+                <div class="chat-sidebar">
+                    <h3>Canais</h3>
+                    <div class="online-users">
+                        <h3>Motociclistas Online</h3>
+                        <ul class="user-list">
+                            <li>
+                                <div class="user-avatar">C</div>
+                                <span>Carlos</span>
+                                <div class="user-status"></div>
+                            </li>
+                            <li>
+                                <div class="user-avatar">A</div>
+                                <span>Ana</span>
+                                <div class="user-status"></div>
+                            </li>
+                            <li>
+                                <div class="user-avatar">R</div>
+                                <span>Ricardo</span>
+                                <div class="user-status"></div>
+                            </li>
+                            <li>
+                                <div class="user-avatar">M</div>
+                                <span>Mariana</span>
+                                <div class="user-status"></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Main chat area -->
+                <div class="chat-main">
+                    <div class="chat-info">
+                        <i class="fas fa-comments"></i>
+                        <span>Conversa geral - Conecte-se com outros motociclistas</span>
+                    </div>
+                    
+                    <div id="chat-box">
+                        <div class="msg received">
+                            <div class="msg-header">
+                                <strong>Carlos</strong> <span class="hora">10:15</span>
+                            </div>
+                            <p>Alguém conhece uma boa rota para a serra sem muito trânsito?</p>
+                        </div>
+                        
+                        <div class="msg sent">
+                            <div class="msg-header">
+                                <strong>Você</strong> <span class="hora">10:18</span>
+                            </div>
+                            <p>Recomendo a estrada velha, tem menos movimento e a paisagem é incrível!</p>
+                        </div>
+                        
+                        <div class="msg received">
+                            <div class="msg-header">
+                                <strong>Ana</strong> <span class="hora">10:20</span>
+                            </div>
+                            <p>Concordo! Só cuidado com a curva depois do km 12, está com buracos.</p>
+                        </div>
+                        
+                        <div class="msg received">
+                            <div class="msg-header">
+                                <strong>Ricardo</strong> <span class="hora">10:22</span>
+                            </div>
+                            <p>Alguém vai para o encontro de motociclistas no domingo?</p>
+                        </div>
+                        
+                        <div class="msg received">
+                            <div class="msg-header">
+                                <strong>Mariana</strong> <span class="hora">10:25</span>
+                            </div>
+                            <p>Eu vou! Vamos combinar de ir juntos? Podemos sair daqui às 8h.</p>
+                        </div>
+                    </div>
+                    
+                    <form id="chat-form">
+                        <input type="text" id="usuario" placeholder="Seu nome" value="Você" required />
+                        <input type="text" id="texto" placeholder="Digite uma mensagem..." required />
+                        <button type="submit" class="btn">Enviar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Sobre o Dex</h3>
+                    <p>O Dex é um sistema inteligente desenvolvido para motociclistas, oferecendo navegação, comunidade e recursos de segurança.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Links Rápidos</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="#">Recursos</a></li>
+                        <li><a href="#">Preços</a></li>
+                        <li><a href="#">Depoimentos</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Recursos</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Navegação</a></li>
+                        <li><a href="#">Rotas em Grupo</a></li>
+                        <li><a href="#">Alertas de Trânsito</a></li>
+                        <li><a href="#">Manutenção</a></li>
+                        <li><a href="#">Comunidade</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contato</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> contato@dexapp.com</li>
+                        <li><i class="fas fa-phone"></i> (11) 99999-9999</li>
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo, Brasil</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Dex - Sistema Inteligente para Motociclistas. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Chat functionality
+        const chatForm = document.getElementById('chat-form');
+        const chatBox = document.getElementById('chat-box');
+        const messageInput = document.getElementById('texto');
+        const userInput = document.getElementById('usuario');
+        
+        // Function to add a new message to the chat
+        function addMessage(user, text, isSent = true) {
+            const now = new Date();
+            const time = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+            
+            const msgElement = document.createElement('div');
+            msgElement.classList.add('msg');
+            msgElement.classList.add(isSent ? 'sent' : 'received');
+            
+            msgElement.innerHTML = `
+                <div class="msg-header">
+                    <strong>${user}</strong> <span class="hora">${time}</span>
+                </div>
+                <p>${text}</p>
+            `;
+            
+            chatBox.appendChild(msgElement);
+            
+            // Scroll to the bottom of the chat
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        // Handle form submission
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const user = userInput.value.trim();
+            const text = messageInput.value.trim();
+            
+            if (user && text) {
+                // In a real app, you would send this to the server
+                // For now, we'll just simulate adding the message
+                addMessage(user, text, true);
+                
+                // Clear the message input
+                messageInput.value = '';
+                
+                // Simulate a response after a short delay
+                setTimeout(() => {
+                    const responses = [
+                        {user: 'Carlos', text: 'Boa dica! Obrigado.'},
+                        {user: 'Ana', text: 'Alguém já fez essa rota de chuva?'},
+                        {user: 'Ricardo', text: 'Vamos combinar de nos encontrar no posto às 9h?'},
+                        {user: 'Mariana', text: 'Alguém tem indicação de oficina boa?'}
+                    ];
+                    
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    addMessage(randomResponse.user, randomResponse.text, false);
+                }, 1000 + Math.random() * 2000);
+            }
+        });
+        
+        // Initialize with some messages
+        window.addEventListener('DOMContentLoaded', () => {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    </script>
+</body>
+</html>

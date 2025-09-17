@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dex - Perfil do Motociclista</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --text: #333;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: var(--text);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            color: var(--secondary);
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Profile Section */
+        .perfil-section {
+            flex: 1;
+            padding: 3rem 0;
+        }
+        
+        .perfil-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .perfil-header h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .perfil-header p {
+            color: #777;
+            font-size: 1.1rem;
+        }
+        
+        .perfil-container {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .perfil-sidebar {
+            width: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            align-self: flex-start;
+        }
+        
+        .perfil-avatar {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--light);
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+        }
+        
+        .avatar-upload {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .avatar-upload-label {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--accent);
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .avatar-upload-label:hover {
+            background: #2980b9;
+        }
+        
+        #avatar-upload {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .perfil-stats {
+            margin-top: 2rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .perfil-content {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .perfil-tabs {
+            display: flex;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 2rem;
+        }
+        
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #777;
+            position: relative;
+            transition: var(--transition);
+        }
+        
+        .tab-btn.active {
+            color: var(--primary);
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--secondary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn-secondary {
+            background: var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: #1a252f;
+        }
+        
+        .moto-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .moto-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+        }
+        
+        .moto-info h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .moto-info p {
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .moto-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .action-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .add-moto-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: #777;
+            font-weight: 600;
+        }
+        
+        .add-moto-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .add-moto-btn i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--secondary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--secondary);
+            padding-left: 5px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .perfil-container {
+                flex-direction: column;
+            }
+            
+            .perfil-sidebar {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .nav-links {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-links li {
+                margin: 0.5rem;
+            }
+            
+            .perfil-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab-btn {
+                flex: 1;
+                text-align: center;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .moto-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .moto-actions {
+                margin-left: 0;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-motorcycle"></i>
+                    <span>Dex</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="{{ url_for('index') }}">Início</a></li>
+                    <li><a href="{{ url_for('mapa') }}">Mapa</a></li>
+                    <li><a href="{{ url_for('chat') }}">Chat</a></li>
+                    <li><a href="{{ url_for('ia') }}">IA</a></li>
+                    <li><a href="{{ url_for('perfil') }}" class="active">Perfil</a></li>
+                </ul>
+                <a href="#" class="btn">Sair</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Profile Section -->
+    <section class="perfil-section">
+        <div class="container">
+            <div class="perfil-header">
+                <h2>Seu Perfil</h2>
+                <p>Gerencie suas informações e preferências de motociclismo</p>
+            </div>
+            
+            <div class="perfil-container">
+                <div class="perfil-sidebar">
+                    <div class="perfil-avatar">
+                        <div class="avatar-upload">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1364&q=80" alt="Avatar" class="avatar" id="avatar-preview">
+                            <label for="avatar-upload" class="avatar-upload-label">
+                                <i class="fas fa-camera"></i> Alterar
+                            </label>
+                            <input type="file" id="avatar-upload" accept="image/*">
+                        </div>
+                        <h3 id="profile-name">Carlos Silva</h3>
+                        <p>Membro desde: Jan 2022</p>
+                    </div>
+                    
+                    <div class="perfil-stats">
+                        <div class="stat-item">
+                            <span>Rotas Concluídas</span>
+                            <span class="stat-value">42</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Km Percorridos</span>
+                            <span class="stat-value">5,240</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Amigos</span>
+                            <span class="stat-value">28</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Nível</span>
+                            <span class="stat-value">Avançado</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="perfil-content">
+                    <div class="perfil-tabs">
+                        <button class="tab-btn active" data-tab="info">Informações</button>
+                        <button class="tab-btn" data-tab="motos">Minhas Motos</button>
+                        <button class="tab-btn" data-tab="preferences">Preferências</button>
+                        <button class="tab-btn" data-tab="privacy">Privacidade</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="info-tab">
+                        <form id="profile-form">
+                            <div class="form-group">
+                                <label for="nome">Nome completo</label>
+                                <input type="text" id="nome" value="Carlos Silva">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="apelido">Apelido</label>
+                                <input type="text" id="apelido" value="Carlão">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bio">Biografia</label>
+                                <textarea id="bio">Apaixonado por estradas desde 2010. Adoro explorar rotas novas e encontrar os melhores caminhos para motociclistas.</textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cidade">Cidade</label>
+                                <input type="text" id="cidade" value="São Paulo">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="estado">Estado</label>
+                                <select id="estado">
+                                    <option value="SP" selected>São Paulo</option>
+                                    <option value="RJ">Rio de Janeiro</option>
+                                    <option value="MG">Minas Gerais</option>
+                                    <option value="RS">Rio Grande do Sul</option>
+                                    <option value="PR">Paraná</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn" id="salvar-perfil">Salvar Alterações</button>
+                                <button type="button" class="btn btn-secondary">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="tab-content" id="motos-tab">
+                        <div class="moto-card">
+                            <div class="moto-icon">
+                                <i class="fas fa-motorcycle"></i>
+                            </div>
+                            <div class="moto-info">
+                                <h4>Honda CB 500F</h4>
+                                <p>2020 • 471cc • 12.000 km</p>
+                            </div>
+                            <div class="moto-actions">
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="moto-card">
+                            <div class="moto-icon">
+                                <i class="fas fa-motorcycle"></i>
+                            </div>
+                            <div class="moto-info">
+                                <h4>Yamaha MT-03</h4>
+                                <p>2018 • 321cc • 18.500 km</p>
+                            </div>
+                            <div class="moto-actions">
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        
+                        <button class="add-moto-btn">
+                            <i class="fas fa-plus"></i> Adicionar Moto
+                        </button>
+                    </div>
+                    
+                    <div class="tab-content" id="preferences-tab">
+                        <div class="form-group">
+                            <label for="tipo-rota">Tipo de Rota Preferida</label>
+                            <select id="tipo-rota">
+                                <option value="rapida" selected>Mais Rápida</option>
+                                <option value="curta">Mais Curta</option>
+                                <option value="cenica">Cênica</option>
+                                <option value="aventura">Aventura/Off-road</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notificacoes">Notificações</label>
+                            <div class="option-check">
+                                <input type="checkbox" id="notif-rotas" checked>
+                                <label for="notif-rotas">Novas rotas sugeridas</label>
+                            </div>
+                            <div class="option-check">
+                                <input type="checkbox" id="notif-eventos" checked>
+                                <label for="notif-eventos">Eventos de motociclismo</label>
+                            </div>
+                            <div class="option-check">
+                                <input type="checkbox" id="notif-manutencao">
+                                <label for="notif-manutencao">Lembretes de manutenção</label>
+                            </div>
+                            <div class="option-check">
+                                <input type="checkbox" id="notif-clima" checked>
+                                <label for="notif-clima">Alertas climáticos</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn">Salvar Preferências</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="privacy-tab">
+                        <div class="form-group">
+                            <label for="visibilidade-perfil">Visibilidade do Perfil</label>
+                            <select id="visibilidade-perfil">
+                                <option value="publico" selected>Público</option>
+                                <option value="amigos">Apenas Amigos</option>
+                                <option value="privado">Privado</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="localizacao">Compartilhar Localização</label>
+                            <select id="localizacao">
+                                <option value="sempre">Sempre</option>
+                                <option value="amigos" selected>Apenas com Amigos</option>
+                                <option value="never">Nunca</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="historico-rotas">Histórico de Rotas</label>
+                            <select id="historico-rotas">
+                                <option value="salvar" selected>Salvar meu histórico</option>
+                                <option value="nao-salvar">Não salvar histórico</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn">Salvar Configurações</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Sobre o Dex</h3>
+                    <p>O Dex é um sistema inteligente desenvolvido para motociclistas, oferecendo navegação, comunidade e recursos de segurança.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Links Rápidos</h3>
+                    <ul class="footer-links">
+                        <li><a href="mapa.html">Início</a></li>
+                        <li><a href="#">Recursos</a></li>
+                        <li><a href="#">Preços</a></li>
+                        <li><a href="#">Depoimentos</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Recursos</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Navegação</a></li>
+                        <li><a href="#">Rotas em Grupo</a></li>
+                        <li><a href="#">Alertas de Trânsito</a></li>
+                        <li><a href="#">Manutenção</a></li>
+                        <li><a href="#">Comunidade</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contato</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> contato@dexapp.com</li>
+                        <li><i class="fas fa-phone"></i> (11) 99999-9999</li>
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo, Brasil</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Dex - Sistema Inteligente para Motociclistas. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked button and corresponding content
+                    button.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Avatar upload preview
+            const avatarUpload = document.getElementById('avatar-upload');
+            const avatarPreview = document.getElementById('avatar-preview');
+            
+            avatarUpload.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        avatarPreview.src = e.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Save profile functionality
+            const saveButton = document.getElementById('salvar-perfil');
+            
+            saveButton.addEventListener('click', function() {
+                const nome = document.getElementById('nome').value;
+                const bio = document.getElementById('bio').value;
+                
+                if (!nome.trim()) {
+                    alert('Por favor, insira um nome.');
+                    return;
+                }
+                
+                // Update profile name in sidebar
+                document.getElementById('profile-name').textContent = nome;
+                
+                // Simulate saving to server
+                setTimeout(() => {
+                    alert('Perfil salvo com sucesso!');
+                }, 500);
+            });
+            
+            // Initialize with sample data
+            const motoCards = document.querySelectorAll('.moto-card');
+            motoCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.moto-actions')) {
+                        // Handle card click (e.g., view details)
+                        console.log('Moto card clicked');
+                    }
+                });
+            });
+            
+            // Add new moto button
+            const addMotoBtn = document.querySelector('.add-moto-btn');
+            addMotoBtn.addEventListener('click', () => {
+                alert('Funcionalidade de adicionar nova moto em desenvolvimento!');
+            });
+        });
+    </script>
+</body>
+</html>
